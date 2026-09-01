@@ -1,6 +1,6 @@
 # Constellate
 
-![Constellate concept artwork](docs/Constellate-concept.png)
+![Constellate running in VCV Rack](docs/Constellate.png)
 
 Constellate is a 15 HP, four-channel relational event memory for VCV Rack 2. It listens to trigger streams A-D, learns which events tend to follow one another and at what pace, and produces coherent variations from that learned behavior.
 
