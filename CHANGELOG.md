@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1
+
+- Improved the legibility and alignment of the lower control and port labels.
+- Added a 15-second performance demo to the repository and README.
+
 ## 2.1.0
 
 - Refined the panel to match the original concept artwork at 15 HP.

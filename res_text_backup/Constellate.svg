@@ -26,6 +26,8 @@
       .tag { fill:#e0aa50; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.38px; font-weight:600; letter-spacing:0.55px; text-anchor:middle; }
       .label { fill:#e7b866; font-family:'DejaVu Sans','Arial',sans-serif; font-size:2.03px; font-weight:400; letter-spacing:0.25px; text-anchor:middle; }
       .small { fill:#dfb56d; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.5px; font-weight:400; letter-spacing:0.15px; text-anchor:middle; }
+      .control-label { fill:#e6b762; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.68px; font-weight:600; letter-spacing:0.11px; text-anchor:middle; }
+      .port-label { fill:#efc77e; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.78px; font-weight:600; letter-spacing:0.08px; text-anchor:middle; }
       .amber { fill:#e2ad55; }
       .brand { fill:#d9a858; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.58px; font-weight:400; letter-spacing:0.88px; text-anchor:middle; }
     </style>
@@ -73,26 +75,26 @@
   <text class="small" x="23.7" y="71.9">LIVE</text>
   <text class="small" x="52.5" y="71.9">DREAM</text>
 
-  <text class="small amber" x="14.5" y="94.1">LEARN</text>
-  <text class="small amber" x="32.2" y="94.1">CV</text>
-  <text class="small amber" x="44" y="94.1">AMT</text>
-  <text class="small amber" x="61.7" y="94.1">HOLD</text>
+  <text class="control-label" x="14.5" y="94.1">LEARN</text>
+  <text class="control-label" x="32.2" y="94.1">CV</text>
+  <text class="control-label" x="44" y="94.1">AMT</text>
+  <text class="control-label" x="61.7" y="94.1">HOLD</text>
 
   <path d="M4.5 96.1 H71.7" stroke="#4b4a47" stroke-width="0.25"/>
-  <text class="small" x="7.6" y="98">A</text>
-  <text class="small" x="19.8" y="98">B</text>
-  <text class="small" x="32" y="98">C</text>
-  <text class="small" x="44.2" y="98">D</text>
-  <text class="small" x="56.4" y="98">CLOCK</text>
-  <text class="small" x="68.6" y="98">RESET</text>
+  <text class="port-label" x="7.6" y="98">A</text>
+  <text class="port-label" x="19.8" y="98">B</text>
+  <text class="port-label" x="32" y="98">C</text>
+  <text class="port-label" x="44.2" y="98">D</text>
+  <text class="port-label" x="56.4" y="98">CLOCK</text>
+  <text class="port-label" x="68.6" y="98">RESET</text>
 
   <path d="M4.5 109.1 H71.7" stroke="#e2ad55" stroke-width="0.3" opacity="0.72"/>
   <circle cx="38.1" cy="109.1" r="0.55" fill="#e2ad55"/>
-  <text class="small" x="10.5" y="113">A</text>
-  <text class="small" x="24.3" y="113">B</text>
-  <text class="small" x="38.1" y="113">C</text>
-  <text class="small" x="51.9" y="113">D</text>
-  <text class="small" x="65.7" y="113">THREAD</text>
+  <text class="port-label" x="10.5" y="112.7">A</text>
+  <text class="port-label" x="24.3" y="112.7">B</text>
+  <text class="port-label" x="38.1" y="112.7">C</text>
+  <text class="port-label" x="51.9" y="112.7">D</text>
+  <text class="port-label" x="65.7" y="112.7">THREAD</text>
 
   <!-- colour coding is printed under the corresponding output sockets -->
   <g fill="none" stroke-width="0.65" opacity="0.92">

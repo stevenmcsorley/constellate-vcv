@@ -6,6 +6,12 @@ Constellate is a 15 HP, four-channel relational event memory for VCV Rack 2. It 
 
 It is not a fixed step sequencer. The module builds a variable-order transition model from the patch itself, so its output can retain recurring phrases and relationships without simply looping a recording.
 
+## Demo
+
+[![Watch the 15-second Constellate demo](docs/Constellate-demo-poster.png)](docs/Constellate-demo.mp4)
+
+[Watch or download the 15-second MP4](docs/Constellate-demo.mp4)
+
 ## Quick start
 
 1. Patch related triggers or gates into **A-D**. **LEARN** is enabled by default.
