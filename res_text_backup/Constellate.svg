@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="91.44mm" height="128.5mm" viewBox="0 0 91.44 128.5">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17191d"/>
+      <stop offset="0.52" stop-color="#0d0f13"/>
+      <stop offset="1" stop-color="#121419"/>
+    </linearGradient>
+    <linearGradient id="gold-rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d99b35" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#d99b35" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#d99b35" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="display-glow" cx="0.5" cy="0.48" r="0.7">
+      <stop offset="0" stop-color="#172536" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#020407" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .name { fill:#f0f2f4; font-family:'DejaVu Sans','Arial',sans-serif; font-size:5.2px; font-weight:700; letter-spacing:1.35px; text-anchor:middle; }
+      .tag { fill:#d99b35; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.28px; font-weight:600; letter-spacing:0.62px; text-anchor:middle; }
+      .label { fill:#e6e8ec; font-family:'DejaVu Sans','Arial',sans-serif; font-size:2.05px; font-weight:600; letter-spacing:0.28px; text-anchor:middle; }
+      .small { fill:#c4c9d1; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.62px; font-weight:600; letter-spacing:0.18px; text-anchor:middle; }
+      .amber { fill:#d99b35; }
+      .brand { fill:#777f8b; font-family:'DejaVu Sans','Arial',sans-serif; font-size:1.65px; font-weight:600; letter-spacing:1.15px; text-anchor:middle; }
+    </style>
+  </defs>
+
+  <rect width="91.44" height="128.5" fill="url(#panel)"/>
+  <rect x="0.55" y="0.55" width="90.34" height="127.4" rx="0.9" fill="none" stroke="#30343b" stroke-width="0.35"/>
+  <path d="M27 13 H64.44" stroke="url(#gold-rule)" stroke-width="0.35"/>
+
+  <text class="name" x="45.72" y="7.7">CONSTELLATE</text>
+  <text class="tag" x="45.72" y="11.1">RELATIONAL EVENT MEMORY</text>
+
+  <!-- display backing: the live NanoVG renderer sits on this glass -->
+  <rect x="25.35" y="18.85" width="40.74" height="40.3" rx="2" fill="#030609" stroke="#302b24" stroke-width="0.45"/>
+  <rect x="26.2" y="19.7" width="39.04" height="38.6" rx="1.4" fill="url(#display-glow)"/>
+
+  <!-- restrained arcs around the four relationship controls -->
+  <g fill="none" stroke="#d99b35" stroke-width="0.38" stroke-linecap="round" opacity="0.82">
+    <path d="M8.1 30 A5.9 5.9 0 1 1 19.9 30"/>
+    <path d="M8.1 51.5 A5.9 5.9 0 1 1 19.9 51.5"/>
+    <path d="M71.54 30 A5.9 5.9 0 1 1 83.34 30"/>
+    <path d="M71.54 51.5 A5.9 5.9 0 1 1 83.34 51.5"/>
+    <path d="M36.1 74 A9.62 9.62 0 1 1 55.34 74" stroke-width="0.52"/>
+  </g>
+  <g fill="#d99b35">
+    <circle cx="8.1" cy="30" r="0.55"/><circle cx="19.9" cy="30" r="0.55"/>
+    <circle cx="8.1" cy="51.5" r="0.55"/><circle cx="19.9" cy="51.5" r="0.55"/>
+    <circle cx="71.54" cy="30" r="0.55"/><circle cx="83.34" cy="30" r="0.55"/>
+    <circle cx="71.54" cy="51.5" r="0.55"/><circle cx="83.34" cy="51.5" r="0.55"/>
+    <circle cx="36.1" cy="74" r="0.65"/><circle cx="55.34" cy="74" r="0.65"/>
+  </g>
+
+  <text class="label" x="14" y="39.4">MEMORY</text>
+  <text class="label" x="14" y="60.9">AFFINITY</text>
+  <text class="label" x="77.44" y="39.4">DRIFT</text>
+  <text class="label" x="77.44" y="60.9">DENSITY</text>
+
+  <text class="label amber" x="45.72" y="63.8">MORPH</text>
+  <text class="small" x="31.6" y="76.1">LIVE</text>
+  <text class="small" x="59.9" y="76.1">DREAM</text>
+
+  <text class="small amber" x="34" y="98.3">LEARN</text>
+  <text class="small amber" x="57.44" y="98.3">HOLD</text>
+
+  <path d="M5 100.2 H86.44" stroke="#42464e" stroke-width="0.26"/>
+  <text class="small" x="8.5" y="101.9">A</text>
+  <text class="small" x="23.4" y="101.9">B</text>
+  <text class="small" x="38.3" y="101.9">C</text>
+  <text class="small" x="53.2" y="101.9">D</text>
+  <text class="small" x="68.1" y="101.9">CLOCK</text>
+  <text class="small" x="83" y="101.9">RESET</text>
+
+  <path d="M5 112.4 H86.44" stroke="#d99b35" stroke-width="0.28" opacity="0.56"/>
+  <text class="small" x="15.9" y="115.8">A</text>
+  <text class="small" x="30.8" y="115.8">B</text>
+  <text class="small" x="45.72" y="115.8">C</text>
+  <text class="small" x="60.6" y="115.8">D</text>
+  <text class="small" x="75.5" y="115.8">THREAD</text>
+
+  <!-- colour coding is printed under the corresponding output sockets -->
+  <g fill="none" stroke-width="0.65" opacity="0.92">
+    <circle cx="15.9" cy="120.5" r="5.05" stroke="#25d6f2"/>
+    <circle cx="30.8" cy="120.5" r="5.05" stroke="#ffb525"/>
+    <circle cx="45.72" cy="120.5" r="5.05" stroke="#f042a4"/>
+    <circle cx="60.6" cy="120.5" r="5.05" stroke="#83e342"/>
+    <circle cx="75.5" cy="120.5" r="5.05" stroke="#8d96a3"/>
+  </g>
+
+  <text class="brand" x="45.72" y="127.5">halfagiraf</text>
+</svg>
+

@@ -1,0 +1,23 @@
+{
+  "slug": "halfagiraf-Constellate",
+  "name": "halfagiraf Modules",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "halfagiraf",
+  "author": "Steven McSorley",
+  "authorEmail": "smcsorl@googlemail.com",
+  "authorUrl": "https://github.com/stevenmcsorley",
+  "pluginUrl": "https://github.com/stevenmcsorley/constellate-vcv",
+  "manualUrl": "https://github.com/stevenmcsorley/constellate-vcv#readme",
+  "sourceUrl": "https://github.com/stevenmcsorley/constellate-vcv",
+  "description": "Relational event memory that learns trigger-stream behavior and generates coherent variations.",
+  "modules": [
+    {
+      "slug": "Constellate",
+      "name": "Constellate",
+      "description": "Four-channel relational event memory and generative trigger processor with a transition-confidence CV output.",
+      "tags": ["Sequencer", "Random", "Clock", "Utility", "Visual"]
+    }
+  ]
+}
+

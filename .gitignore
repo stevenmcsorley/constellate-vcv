@@ -1,0 +1,9 @@
+/build/
+/dist/
+*.dll
+*.dylib
+*.so
+*.vcvplugin
+*.exe
+.DS_Store
+
