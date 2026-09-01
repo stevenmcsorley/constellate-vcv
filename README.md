@@ -23,6 +23,7 @@ It is not a fixed step sequencer. The module builds a variable-order transition 
 | **DRIFT** | Blends the learned distribution toward unexplored A-D choices. |
 | **DENSITY** | Controls the probability of a generated event on CLOCK and the pace/activity of free-running dreams. |
 | **MORPH** | Moves from unaltered live routing to learned generative substitutions. |
+| **MORPH CV / AMT** | Adds bipolar, attenuverted CV to MORPH. At +100%, 0-10 V spans the full LIVE-to-DREAM range; negative settings invert the movement. |
 | **LEARN** | Enables or disables updates to the relational memory. |
 | **HOLD** | Temporarily freezes the current constellation without changing the LEARN preference. |
 
@@ -31,10 +32,11 @@ It is not a fixed step sequencer. The module builds a variable-order transition 
 - **A-D inputs:** trigger/gate streams to learn and transform.
 - **CLOCK:** requests dream events on incoming clock edges.
 - **RESET:** returns the playback context to the most recently learned phrase without deleting memory.
+- **MORPH CV:** voltage control of the LIVE/DREAM position through the adjacent bipolar AMT attenuverter.
 - **A-D outputs:** 10 V triggers, color-matched to the nodes on the display.
 - **THREAD:** 0-10 V confidence for the most recent generated choice. Strong, well-learned transitions produce higher voltage; live or uncertain events produce lower voltage.
 
-The display is driven by the real first-order transition matrix. Line brightness and route stars show learned relationship strength, node flashes show emitted events, and the lower amber meter shows THREAD confidence.
+The display is driven by the real first-order transition matrix. Its labelled nodes map directly to A-D. A coloured source-to-destination line means that one event has been observed following another; brightness and thickness show probability, fixed route stars show accumulated evidence, and a bright travelling bead marks each transition as it actually fires. The lower amber meter shows THREAD confidence.
 
 ## Memory and persistence
 

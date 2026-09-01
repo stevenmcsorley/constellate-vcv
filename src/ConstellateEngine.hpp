@@ -13,6 +13,16 @@ struct Choice {
 	float probability = 0.25f;
 };
 
+// HOLD freezes only the learner. Routing, playback, and generation remain live.
+inline bool learningActive(bool learningEnabled, bool holdEnabled) {
+	return learningEnabled && !holdEnabled;
+}
+
+inline float effectiveMorph(float manual, float cvVoltage, float attenuverter) {
+	float value = manual + cvVoltage * 0.1f * attenuverter;
+	return value < 0.f ? 0.f : (value > 1.f ? 1.f : value);
+}
+
 // A compact variable-order Markov model for four event streams. Learning and
 // playback keep separate histories so generated choices never contaminate the
 // model being learned from the patch.
@@ -222,6 +232,12 @@ struct Engine {
 			return 0.f;
 		float total = rowTotal(1, from);
 		return total > 0.f ? weights[0][from][to] / total : 0.f;
+	}
+
+	float transitionEvidence(int from, int to) const {
+		if (from < 0 || from >= CHANNELS || to < 0 || to >= CHANNELS)
+			return 0.f;
+		return weights[0][from][to];
 	}
 
 	float intervalFor(int from, int to) const {

@@ -22,6 +22,7 @@ static void testLearningAndTiming() {
 	assert(engine.hasSequence());
 	assert(engine.transitionProbability(0, 1) > 0.99f);
 	assert(engine.transitionProbability(1, 0) > 0.95f);
+	assert(engine.transitionEvidence(0, 1) > 30.f);
 	assert(std::fabs(engine.intervalFor(0, 1) - 0.25f) < 0.01f);
 	assert(std::fabs(engine.intervalFor(1, 0) - 0.25f) < 0.01f);
 }
@@ -87,12 +88,55 @@ static void testClear() {
 			assert(engine.transitionProbability(from, to) == 0.f);
 }
 
+static void testHoldFreezesLearningOnly() {
+	Engine engine;
+	double time = 0.0;
+	bool learn = true;
+	bool hold = false;
+	if (constellate::learningActive(learn, hold))
+		engine.observe(0, time += 0.1);
+	if (constellate::learningActive(learn, hold))
+		engine.observe(1, time += 0.1);
+	const uint32_t learnedBeforeHold = engine.observations;
+
+	hold = true;
+	assert(!constellate::learningActive(learn, hold));
+	if (constellate::learningActive(learn, hold))
+		engine.observe(1, time += 0.1);
+	assert(engine.observations == learnedBeforeHold);
+
+	// Playback remains available while HOLD blocks observations.
+	assert(engine.hasSequence());
+	engine.reseed(123u);
+	constellate::Choice heldChoice = engine.choose(1, 1.f, 0.f);
+	assert(heldChoice.event >= 0 && heldChoice.event < Engine::CHANNELS);
+
+	hold = false;
+	assert(constellate::learningActive(learn, hold));
+	if (constellate::learningActive(learn, hold))
+		engine.observe(1, time += 0.1);
+	assert(engine.observations == learnedBeforeHold + 1);
+
+	learn = false;
+	assert(!constellate::learningActive(learn, false));
+}
+
+static void testMorphCvAttenuverter() {
+	assert(std::fabs(constellate::effectiveMorph(0.25f, 5.f, 1.f) - 0.75f) < 1e-6f);
+	assert(std::fabs(constellate::effectiveMorph(0.75f, 5.f, -1.f) - 0.25f) < 1e-6f);
+	assert(constellate::effectiveMorph(0.8f, 10.f, 1.f) == 1.f);
+	assert(constellate::effectiveMorph(0.2f, 10.f, -1.f) == 0.f);
+	assert(constellate::effectiveMorph(0.4f, 10.f, 0.f) == 0.4f);
+}
+
 int main() {
 	testLearningAndTiming();
 	testDeterministicContinuation();
 	testDriftExploresAllStreams();
 	testVariableOrderMemory();
 	testClear();
+	testHoldFreezesLearningOnly();
+	testMorphCvAttenuverter();
 	std::cout << "Constellate engine tests passed\n";
 	return 0;
 }

@@ -47,21 +47,21 @@
   <rect x="18.55" y="17.5" width="39.1" height="36.6" rx="1.35" fill="url(#display-glow)"/>
 
   <!-- restrained arcs around the four relationship controls -->
-  <g fill="none" stroke="#e2ad55" stroke-width="0.46" stroke-linecap="round" opacity="0.92">
-    <path d="M6.2 33 C3.7 29.3 4.1 23.4 7.2 20.5 C9.8 18.2 13.2 18.2 15.8 20.5 C18.9 23.4 19.3 29.3 16.8 33"/>
-    <path d="M6.2 53.2 C3.7 49.5 4.1 43.6 7.2 40.7 C9.8 38.4 13.2 38.4 15.8 40.7 C18.9 43.6 19.3 49.5 16.8 53.2"/>
-    <path d="M59.4 33 C56.9 29.3 57.3 23.4 60.4 20.5 C63 18.2 66.4 18.2 69 20.5 C72.1 23.4 72.5 29.3 70 33"/>
-    <path d="M59.4 53.2 C56.9 49.5 57.3 43.6 60.4 40.7 C63 38.4 66.4 38.4 69 40.7 C72.1 43.6 72.5 49.5 70 53.2"/>
-    <path d="M33.2 60.6 C29.7 62.8 27.3 68.4 27.3 75.6" stroke-width="0.56"/>
-    <path d="M43 60.6 C46.5 62.8 48.9 68.4 48.9 75.6" stroke-width="0.56"/>
+  <g fill="none" stroke="#e2ad55" stroke-width="0.34" stroke-linecap="round" opacity="0.78">
+    <path d="M6.7 32.3 C4.7 29.2 5 24.1 7.6 21.6 C9.8 19.6 13.2 19.6 15.4 21.6 C18 24.1 18.3 29.2 16.3 32.3"/>
+    <path d="M6.7 52.5 C4.7 49.4 5 44.3 7.6 41.8 C9.8 39.8 13.2 39.8 15.4 41.8 C18 44.3 18.3 49.4 16.3 52.5"/>
+    <path d="M59.9 32.3 C57.9 29.2 58.2 24.1 60.8 21.6 C63 19.6 66.4 19.6 68.6 21.6 C71.2 24.1 71.5 29.2 69.5 32.3"/>
+    <path d="M59.9 52.5 C57.9 49.4 58.2 44.3 60.8 41.8 C63 39.8 66.4 39.8 68.6 41.8 C71.2 44.3 71.5 49.4 69.5 52.5"/>
+    <path d="M33.5 60.9 C30.6 63.2 28.8 68.6 29 75.2" stroke-width="0.44"/>
+    <path d="M42.7 60.9 C45.6 63.2 47.4 68.6 47.2 75.2" stroke-width="0.44"/>
   </g>
   <g fill="#e2ad55">
-    <circle cx="11.5" cy="19.15" r="0.52"/>
-    <circle cx="11.5" cy="39.35" r="0.52"/>
-    <circle cx="64.7" cy="19.15" r="0.52"/>
-    <circle cx="64.7" cy="39.35" r="0.52"/>
-    <circle cx="33.2" cy="60.6" r="0.58"/><circle cx="27.3" cy="75.6" r="0.58"/>
-    <circle cx="43" cy="60.6" r="0.58"/><circle cx="48.9" cy="75.6" r="0.58"/>
+    <circle cx="11.5" cy="20.1" r="0.4"/>
+    <circle cx="11.5" cy="40.3" r="0.4"/>
+    <circle cx="64.7" cy="20.1" r="0.4"/>
+    <circle cx="64.7" cy="40.3" r="0.4"/>
+    <circle cx="33.5" cy="60.9" r="0.48"/><circle cx="29" cy="75.2" r="0.48"/>
+    <circle cx="42.7" cy="60.9" r="0.48"/><circle cx="47.2" cy="75.2" r="0.48"/>
   </g>
 
   <text class="label" x="11.5" y="37.2">MEMORY</text>
@@ -73,8 +73,10 @@
   <text class="small" x="23.7" y="71.9">LIVE</text>
   <text class="small" x="52.5" y="71.9">DREAM</text>
 
-  <text class="small amber" x="27.5" y="94.1">LEARN</text>
-  <text class="small amber" x="48.7" y="94.1">HOLD</text>
+  <text class="small amber" x="14.5" y="94.1">LEARN</text>
+  <text class="small amber" x="32.2" y="94.1">CV</text>
+  <text class="small amber" x="44" y="94.1">AMT</text>
+  <text class="small amber" x="61.7" y="94.1">HOLD</text>
 
   <path d="M4.5 96.1 H71.7" stroke="#4b4a47" stroke-width="0.25"/>
   <text class="small" x="7.6" y="98">A</text>

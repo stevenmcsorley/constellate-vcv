@@ -21,12 +21,14 @@ struct Constellate : Module {
 		MORPH_PARAM,
 		LEARN_PARAM,
 		HOLD_PARAM,
+		MORPH_CV_ATTENUVERTER_PARAM,
 		PARAMS_LEN
 	};
 	enum InputId {
 		ENUMS(EVENT_INPUTS, 4),
 		CLOCK_INPUT,
 		RESET_INPUT,
+		MORPH_CV_INPUT,
 		INPUTS_LEN
 	};
 	enum OutputId {
@@ -57,9 +59,12 @@ struct Constellate : Module {
 	float threadTarget = 0.f;
 	float threadVoltage = 0.f;
 	float pulseLevel[4] = {0.f, 0.f, 0.f, 0.f};
+	float routeActivity[16] = {};
 	int currentEvent = -1;
 
 	std::atomic<float> uiWeights[16];
+	std::atomic<float> uiEvidence[16];
+	std::atomic<float> uiRouteActivity[16];
 	std::atomic<float> uiPulses[4];
 	std::atomic<float> uiConfidence;
 	std::atomic<int> uiCurrentEvent;
@@ -76,6 +81,8 @@ struct Constellate : Module {
 		configParam(MORPH_PARAM, 0.f, 1.f, 0.f, "Live / Dream morph", "%", 0.f, 100.f);
 		configButton(LEARN_PARAM, "Toggle learning");
 		configButton(HOLD_PARAM, "Hold learned constellation");
+		configParam(MORPH_CV_ATTENUVERTER_PARAM, -1.f, 1.f, 0.f,
+			"Morph CV attenuverter", "%", 0.f, 100.f);
 
 		static const char* names[4] = {"A", "B", "C", "D"};
 		for (int i = 0; i < 4; ++i) {
@@ -85,11 +92,17 @@ struct Constellate : Module {
 		}
 		configInput(CLOCK_INPUT, "Dream clock");
 		configInput(RESET_INPUT, "Reset playback context");
+		configInput(MORPH_CV_INPUT, "Morph CV");
 		configOutput(THREAD_OUTPUT, "Thread confidence CV");
 
-		uiDivider.setDivision(1024);
-		for (int i = 0; i < 16; ++i)
+		// Publish faster than Rack's visual frame rate so even very short events
+		// are visible on the next frame.
+		uiDivider.setDivision(64);
+		for (int i = 0; i < 16; ++i) {
 			uiWeights[i].store(0.f);
+			uiEvidence[i].store(0.f);
+			uiRouteActivity[i].store(0.f);
+		}
 		for (int i = 0; i < 4; ++i)
 			uiPulses[i].store(0.f);
 		uiConfidence.store(0.f);
@@ -109,11 +122,15 @@ struct Constellate : Module {
 		currentEvent = -1;
 		for (int i = 0; i < 4; ++i)
 			pulseLevel[i] = 0.f;
+		for (int i = 0; i < 16; ++i)
+			routeActivity[i] = 0.f;
 	}
 
 	void emitEvent(int event, float confidence) {
 		if (event < 0 || event >= 4)
 			return;
+		if (currentEvent >= 0)
+			routeActivity[currentEvent * 4 + event] = 1.f;
 		eventPulses[event].trigger(gateLength);
 		pulseLevel[event] = 1.f;
 		currentEvent = event;
@@ -121,10 +138,16 @@ struct Constellate : Module {
 	}
 
 	void updateUi() {
-		for (int from = 0; from < 4; ++from)
-			for (int to = 0; to < 4; ++to)
+		for (int from = 0; from < 4; ++from) {
+			for (int to = 0; to < 4; ++to) {
+				int index = from * 4 + to;
 				uiWeights[from * 4 + to].store(
 					engine.transitionProbability(from, to), std::memory_order_relaxed);
+				uiEvidence[index].store(1.f - std::exp(
+					-engine.transitionEvidence(from, to) / 7.f), std::memory_order_relaxed);
+				uiRouteActivity[index].store(routeActivity[index], std::memory_order_relaxed);
+			}
+		}
 		for (int i = 0; i < 4; ++i)
 			uiPulses[i].store(pulseLevel[i], std::memory_order_relaxed);
 		uiConfidence.store(threadTarget / 10.f, std::memory_order_relaxed);
@@ -277,6 +300,8 @@ struct Constellate : Module {
 			engine.clear();
 			threadTarget = 0.f;
 			currentEvent = -1;
+			for (int i = 0; i < 16; ++i)
+				routeActivity[i] = 0.f;
 		}
 		if (reseedRequested.exchange(false))
 			engine.reseed((uint32_t) (elapsedSeconds * 1000003.0) ^ 0x57A4D11Fu);
@@ -297,7 +322,9 @@ struct Constellate : Module {
 		const float affinity = params[AFFINITY_PARAM].getValue();
 		const float drift = params[DRIFT_PARAM].getValue();
 		const float density = params[DENSITY_PARAM].getValue();
-		const float morph = params[MORPH_PARAM].getValue();
+		const float morph = constellate::effectiveMorph(
+			params[MORPH_PARAM].getValue(), inputs[MORPH_CV_INPUT].getVoltage(),
+			params[MORPH_CV_ATTENUVERTER_PARAM].getValue());
 
 		bool anyEventInput = false;
 		for (int i = 0; i < 4; ++i) {
@@ -305,7 +332,7 @@ struct Constellate : Module {
 			if (!eventTriggers[i].process(inputs[EVENT_INPUTS + i].getVoltage(), 0.1f, 1.f))
 				continue;
 
-			if (learningEnabled && !holdEnabled)
+			if (constellate::learningActive(learningEnabled, holdEnabled))
 				engine.observe(i, elapsedSeconds);
 
 			if (engine.hasSequence() && engine.random01() < morph) {
@@ -350,10 +377,13 @@ struct Constellate : Module {
 			outputs[EVENT_OUTPUTS + i].setVoltage(high ? 10.f : 0.f);
 			pulseLevel[i] *= std::exp(-dt * 8.f);
 		}
+		for (int i = 0; i < 16; ++i)
+			routeActivity[i] *= std::exp(-dt * 4.2f);
 
 		threadVoltage += (threadTarget - threadVoltage) * constellateClamp(dt * 24.f, 0.f, 1.f);
 		outputs[THREAD_OUTPUT].setVoltage(threadVoltage);
-		lights[LEARN_LIGHT].setBrightnessSmooth(learningEnabled && !holdEnabled ? 1.f : 0.08f, dt);
+		lights[LEARN_LIGHT].setBrightnessSmooth(
+			constellate::learningActive(learningEnabled, holdEnabled) ? 1.f : 0.08f, dt);
 		lights[HOLD_LIGHT].setBrightnessSmooth(holdEnabled ? 1.f : 0.f, dt);
 
 		if (uiDivider.process())
@@ -413,6 +443,14 @@ struct ConstellateDisplay : TransparentWidget {
 		return nvgRGBA(colors[index][0], colors[index][1], colors[index][2], alpha);
 	}
 
+	static Vec routePoint(Vec a, Vec control, Vec b, float t) {
+		float u = 1.f - t;
+		return a.mult(u * u * u)
+			.plus(control.mult(3.f * u * u * t))
+			.plus(control.mult(3.f * u * t * t))
+			.plus(b.mult(t * t * t));
+	}
+
 	void drawLayer(const DrawArgs& args, int layer) override {
 		if (layer != 1)
 			return;
@@ -441,18 +479,37 @@ struct ConstellateDisplay : TransparentWidget {
 
 		for (int from = 0; from < 4; ++from) {
 			for (int to = 0; to < 4; ++to) {
+				int routeIndex = from * 4 + to;
 				float strength = module
-					? module->uiWeights[from * 4 + to].load(std::memory_order_relaxed)
+					? module->uiWeights[routeIndex].load(std::memory_order_relaxed)
 					: ((to == (from + 1) % 4) ? 0.72f : 0.08f);
-				if (strength < 0.015f)
+				float evidence = module
+					? module->uiEvidence[routeIndex].load(std::memory_order_relaxed)
+					: ((to == (from + 1) % 4) ? 0.68f : 0.08f);
+				float activity = module
+					? module->uiRouteActivity[routeIndex].load(std::memory_order_relaxed)
+					: ((from == 2 && to == 3) ? 0.62f : 0.f);
+				if (strength < 0.015f && activity < 0.025f)
 					continue;
-				unsigned char alpha = (unsigned char) constellateClamp(22.f + strength * 205.f, 0.f, 255.f);
+				float visibleStrength = std::max(strength, activity * 0.72f);
+				unsigned char alpha = (unsigned char) constellateClamp(18.f + visibleStrength * 215.f, 0.f, 255.f);
 				if (from == to) {
+					float radius = mm2px(3.f + strength * 1.2f);
 					nvgBeginPath(vg);
-					nvgCircle(vg, nodes[from].x, nodes[from].y, mm2px(3.f + strength * 1.2f));
+					nvgCircle(vg, nodes[from].x, nodes[from].y, radius);
 					nvgStrokeColor(vg, colorFor(to, alpha));
-					nvgStrokeWidth(vg, 0.7f + strength * 1.2f);
+					nvgStrokeWidth(vg, 0.6f + visibleStrength * 1.2f);
 					nvgStroke(vg);
+					if (activity > 0.025f) {
+						float angle = (1.f - activity) * 6.2831853f - 1.5707963f;
+						Vec bead = nodes[from].plus(Vec(std::cos(angle), std::sin(angle)).mult(radius));
+						NVGpaint halo = nvgRadialGradient(vg, bead.x, bead.y, 0.f, mm2px(1.8f),
+							colorFor(to, 0xf0), colorFor(to, 0));
+						nvgBeginPath(vg);
+						nvgCircle(vg, bead.x, bead.y, mm2px(1.8f));
+						nvgFillPaint(vg, halo);
+						nvgFill(vg);
+					}
 					continue;
 				}
 
@@ -464,23 +521,22 @@ struct ConstellateDisplay : TransparentWidget {
 				nvgBeginPath(vg);
 				nvgMoveTo(vg, a.x, a.y);
 				nvgBezierTo(vg, control.x, control.y, control.x, control.y, b.x, b.y);
-				nvgStrokeColor(vg, colorFor(to, alpha));
-				nvgStrokeWidth(vg, 0.45f + strength * 1.05f);
+				NVGpaint routePaint = nvgLinearGradient(vg, a.x, a.y, b.x, b.y,
+					colorFor(from, (unsigned char) (alpha * 0.62f)), colorFor(to, alpha));
+				nvgStrokePaint(vg, routePaint);
+				nvgStrokeWidth(vg, 0.4f + visibleStrength * 1.08f);
 				nvgStroke(vg);
 
-				// Stable, strength-dependent waypoints make learned routes read as
-				// constellations rather than a plain transition graph.
-				int sparkCount = strength > 0.72f ? 4 : strength > 0.42f ? 3 : strength > 0.18f ? 2 : 0;
+				// Stars encode accumulated observations for this exact first-order
+				// route. They are evidence markers, not free-running decoration.
+				int sparkCount = evidence > 0.86f ? 4 : evidence > 0.64f ? 3
+					: evidence > 0.36f ? 2 : evidence > 0.1f ? 1 : 0;
 				for (int spark = 0; spark < sparkCount; ++spark) {
 					float t = (spark + 1.f) / (sparkCount + 1.f);
-					float u = 1.f - t;
-					Vec point = a.mult(u * u * u)
-						.plus(control.mult(3.f * u * u * t))
-						.plus(control.mult(3.f * u * t * t))
-						.plus(b.mult(t * t * t));
-					float radius = mm2px(0.33f + 0.16f * strength);
+					Vec point = routePoint(a, control, b, t);
+					float radius = mm2px(0.3f + 0.14f * evidence);
 					NVGpaint sparkle = nvgRadialGradient(vg, point.x, point.y, 0.f, radius * 3.8f,
-						colorFor(to, (unsigned char) (150.f + 95.f * strength)), colorFor(to, 0));
+						colorFor(to, (unsigned char) (130.f + 110.f * evidence)), colorFor(to, 0));
 					nvgBeginPath(vg);
 					nvgCircle(vg, point.x, point.y, radius * 3.8f);
 					nvgFillPaint(vg, sparkle);
@@ -488,6 +544,23 @@ struct ConstellateDisplay : TransparentWidget {
 					nvgBeginPath(vg);
 					nvgCircle(vg, point.x, point.y, radius);
 					nvgFillColor(vg, nvgRGBA(0xff, 0xf3, 0xcf, 0xe8));
+					nvgFill(vg);
+				}
+
+				// A bright bead moves source -> destination whenever this actual
+				// transition is emitted, making the line's direction unambiguous.
+				if (activity > 0.025f) {
+					float progress = constellateClamp(1.f - activity, 0.03f, 0.98f);
+					Vec bead = routePoint(a, control, b, progress);
+					NVGpaint beadHalo = nvgRadialGradient(vg, bead.x, bead.y, 0.f, mm2px(2.f),
+						colorFor(to, 0xf4), colorFor(to, 0));
+					nvgBeginPath(vg);
+					nvgCircle(vg, bead.x, bead.y, mm2px(2.f));
+					nvgFillPaint(vg, beadHalo);
+					nvgFill(vg);
+					nvgBeginPath(vg);
+					nvgCircle(vg, bead.x, bead.y, mm2px(0.48f));
+					nvgFillColor(vg, nvgRGBA(0xff, 0xfa, 0xdf, 0xff));
 					nvgFill(vg);
 				}
 			}
@@ -510,7 +583,19 @@ struct ConstellateDisplay : TransparentWidget {
 			nvgFill(vg);
 			nvgStrokeColor(vg, nvgRGBA(0xff, 0xff, 0xff, 0xc0));
 			nvgStrokeWidth(vg, 0.65f);
-			nvgStroke(vg);
+			 nvgStroke(vg);
+		}
+
+		std::shared_ptr<Font> font = APP->window->loadFont(
+			asset::system("res/fonts/ShareTechMono-Regular.ttf"));
+		if (font) {
+			static const char* labels[4] = {"A", "B", "C", "D"};
+			nvgFontFaceId(vg, font->handle);
+			nvgFontSize(vg, mm2px(1.35f));
+			nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+			nvgFillColor(vg, nvgRGBA(0x02, 0x05, 0x07, 0xe8));
+			for (int i = 0; i < 4; ++i)
+				nvgText(vg, nodes[i].x, nodes[i].y + 0.3f, labels[i], nullptr);
 		}
 
 		float confidence = module ? module->uiConfidence.load(std::memory_order_relaxed) : 0.55f;
@@ -547,9 +632,13 @@ struct ConstellateWidget : ModuleWidget {
 		addParam(createParamCentered<RoundHugeBlackKnob>(mm2px(Vec(38.1f, 69.3f)), module, Constellate::MORPH_PARAM));
 
 		addParam(createLightParamCentered<LightButton<ConstellateSquareButton, ConstellateSquareLight<YellowLight>>>(
-			mm2px(Vec(27.5f, 87.3f)), module, Constellate::LEARN_PARAM, Constellate::LEARN_LIGHT));
+			mm2px(Vec(14.5f, 87.3f)), module, Constellate::LEARN_PARAM, Constellate::LEARN_LIGHT));
+		addInput(createInputCentered<PJ301MPort>(
+			mm2px(Vec(32.2f, 87.3f)), module, Constellate::MORPH_CV_INPUT));
+		addParam(createParamCentered<Trimpot>(
+			mm2px(Vec(44.f, 87.3f)), module, Constellate::MORPH_CV_ATTENUVERTER_PARAM));
 		addParam(createLightParamCentered<LightButton<ConstellateSquareButton, ConstellateSquareLight<BlueLight>>>(
-			mm2px(Vec(48.7f, 87.3f)), module, Constellate::HOLD_PARAM, Constellate::HOLD_LIGHT));
+			mm2px(Vec(61.7f, 87.3f)), module, Constellate::HOLD_PARAM, Constellate::HOLD_LIGHT));
 
 		const float inputX[6] = {7.6f, 19.8f, 32.f, 44.2f, 56.4f, 68.6f};
 		for (int i = 0; i < 4; ++i)
