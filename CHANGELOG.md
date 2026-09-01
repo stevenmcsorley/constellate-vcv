@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.1
+
+- Refined the panel to match the original concept artwork at 15 HP.
+- Added illuminated square LEARN and HOLD controls.
+- Added engraved-gold typography, control arcs, panel depth, and route stars.
+- Preserved DSP behavior, parameter IDs, port IDs, and patch memory compatibility.
+
 ## 2.0.0
 
 - Initial release of Constellate.

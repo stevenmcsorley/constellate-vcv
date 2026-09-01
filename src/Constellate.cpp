@@ -361,6 +361,45 @@ struct Constellate : Module {
 	}
 };
 
+struct ConstellateSquareButton : app::SvgSwitch {
+	ConstellateSquareButton() {
+		momentary = true;
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/components/square-button-0.svg")));
+		addFrame(Svg::load(asset::plugin(pluginInstance, "res/components/square-button-1.svg")));
+	}
+};
+
+template <typename TBase>
+struct ConstellateSquareLight : TBase {
+	ConstellateSquareLight() {
+		this->box.size = mm2px(Vec(5.1f, 5.1f));
+		this->bgColor = nvgRGBA(0x16, 0x17, 0x19, 0xff);
+		this->borderColor = nvgRGBA(0, 0, 0, 0);
+	}
+
+	void drawBackground(const widget::Widget::DrawArgs& args) override {
+		nvgBeginPath(args.vg);
+		nvgRoundedRect(args.vg, 0.f, 0.f, this->box.size.x, this->box.size.y, mm2px(0.48f));
+		nvgFillColor(args.vg, this->bgColor);
+		nvgFill(args.vg);
+	}
+
+	void drawLight(const widget::Widget::DrawArgs& args) override {
+		if (this->color.a <= 0.f)
+			return;
+		NVGpaint bloom = nvgRadialGradient(args.vg,
+			this->box.size.x * 0.5f, this->box.size.y * 0.44f,
+			0.f, this->box.size.x * 0.72f,
+			this->color, color::mult(this->color, 0.f));
+		nvgBeginPath(args.vg);
+		nvgRoundedRect(args.vg, 0.f, 0.f, this->box.size.x, this->box.size.y, mm2px(0.48f));
+		nvgFillPaint(args.vg, bloom);
+		nvgFill(args.vg);
+	}
+
+	void drawHalo(const widget::Widget::DrawArgs& args) override {}
+};
+
 struct ConstellateDisplay : TransparentWidget {
 	Constellate* module = nullptr;
 
@@ -426,8 +465,31 @@ struct ConstellateDisplay : TransparentWidget {
 				nvgMoveTo(vg, a.x, a.y);
 				nvgBezierTo(vg, control.x, control.y, control.x, control.y, b.x, b.y);
 				nvgStrokeColor(vg, colorFor(to, alpha));
-				nvgStrokeWidth(vg, 0.55f + strength * 1.25f);
+				nvgStrokeWidth(vg, 0.45f + strength * 1.05f);
 				nvgStroke(vg);
+
+				// Stable, strength-dependent waypoints make learned routes read as
+				// constellations rather than a plain transition graph.
+				int sparkCount = strength > 0.72f ? 4 : strength > 0.42f ? 3 : strength > 0.18f ? 2 : 0;
+				for (int spark = 0; spark < sparkCount; ++spark) {
+					float t = (spark + 1.f) / (sparkCount + 1.f);
+					float u = 1.f - t;
+					Vec point = a.mult(u * u * u)
+						.plus(control.mult(3.f * u * u * t))
+						.plus(control.mult(3.f * u * t * t))
+						.plus(b.mult(t * t * t));
+					float radius = mm2px(0.33f + 0.16f * strength);
+					NVGpaint sparkle = nvgRadialGradient(vg, point.x, point.y, 0.f, radius * 3.8f,
+						colorFor(to, (unsigned char) (150.f + 95.f * strength)), colorFor(to, 0));
+					nvgBeginPath(vg);
+					nvgCircle(vg, point.x, point.y, radius * 3.8f);
+					nvgFillPaint(vg, sparkle);
+					nvgFill(vg);
+					nvgBeginPath(vg);
+					nvgCircle(vg, point.x, point.y, radius);
+					nvgFillColor(vg, nvgRGBA(0xff, 0xf3, 0xcf, 0xe8));
+					nvgFill(vg);
+				}
 			}
 		}
 
@@ -474,31 +536,31 @@ struct ConstellateWidget : ModuleWidget {
 
 		ConstellateDisplay* display = new ConstellateDisplay;
 		display->module = module;
-		display->box.pos = mm2px(Vec(26.f, 19.5f));
-		display->box.size = mm2px(Vec(39.44f, 39.f));
+		display->box.pos = mm2px(Vec(18.45f, 17.4f));
+		display->box.size = mm2px(Vec(39.3f, 36.8f));
 		addChild(display);
 
-		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(14.f, 30.f)), module, Constellate::MEMORY_PARAM));
-		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(14.f, 51.5f)), module, Constellate::AFFINITY_PARAM));
-		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(77.44f, 30.f)), module, Constellate::DRIFT_PARAM));
-		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(77.44f, 51.5f)), module, Constellate::DENSITY_PARAM));
-		addParam(createParamCentered<RoundHugeBlackKnob>(mm2px(Vec(45.72f, 74.f)), module, Constellate::MORPH_PARAM));
+		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(11.5f, 27.7f)), module, Constellate::MEMORY_PARAM));
+		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(11.5f, 47.9f)), module, Constellate::AFFINITY_PARAM));
+		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(64.7f, 27.7f)), module, Constellate::DRIFT_PARAM));
+		addParam(createParamCentered<RoundLargeBlackKnob>(mm2px(Vec(64.7f, 47.9f)), module, Constellate::DENSITY_PARAM));
+		addParam(createParamCentered<RoundHugeBlackKnob>(mm2px(Vec(38.1f, 69.3f)), module, Constellate::MORPH_PARAM));
 
-		addParam(createParamCentered<LEDButton>(mm2px(Vec(34.f, 91.5f)), module, Constellate::LEARN_PARAM));
-		addChild(createLightCentered<MediumLight<YellowLight>>(mm2px(Vec(34.f, 91.5f)), module, Constellate::LEARN_LIGHT));
-		addParam(createParamCentered<LEDButton>(mm2px(Vec(57.44f, 91.5f)), module, Constellate::HOLD_PARAM));
-		addChild(createLightCentered<MediumLight<BlueLight>>(mm2px(Vec(57.44f, 91.5f)), module, Constellate::HOLD_LIGHT));
+		addParam(createLightParamCentered<LightButton<ConstellateSquareButton, ConstellateSquareLight<YellowLight>>>(
+			mm2px(Vec(27.5f, 87.3f)), module, Constellate::LEARN_PARAM, Constellate::LEARN_LIGHT));
+		addParam(createLightParamCentered<LightButton<ConstellateSquareButton, ConstellateSquareLight<BlueLight>>>(
+			mm2px(Vec(48.7f, 87.3f)), module, Constellate::HOLD_PARAM, Constellate::HOLD_LIGHT));
 
-		const float inputX[6] = {8.5f, 23.4f, 38.3f, 53.2f, 68.1f, 83.f};
+		const float inputX[6] = {7.6f, 19.8f, 32.f, 44.2f, 56.4f, 68.6f};
 		for (int i = 0; i < 4; ++i)
-			addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[i], 106.5f)), module, Constellate::EVENT_INPUTS + i));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[4], 106.5f)), module, Constellate::CLOCK_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[5], 106.5f)), module, Constellate::RESET_INPUT));
+			addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[i], 102.7f)), module, Constellate::EVENT_INPUTS + i));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[4], 102.7f)), module, Constellate::CLOCK_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[5], 102.7f)), module, Constellate::RESET_INPUT));
 
-		const float outputX[5] = {15.9f, 30.8f, 45.72f, 60.6f, 75.5f};
+		const float outputX[5] = {10.5f, 24.3f, 38.1f, 51.9f, 65.7f};
 		for (int i = 0; i < 4; ++i)
-			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[i], 120.5f)), module, Constellate::EVENT_OUTPUTS + i));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[4], 120.5f)), module, Constellate::THREAD_OUTPUT));
+			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[i], 118.f)), module, Constellate::EVENT_OUTPUTS + i));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[4], 118.f)), module, Constellate::THREAD_OUTPUT));
 
 	}
 

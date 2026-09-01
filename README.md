@@ -2,7 +2,7 @@
 
 ![Constellate concept artwork](docs/Constellate-concept.png)
 
-Constellate is a four-channel relational event memory for VCV Rack 2. It listens to trigger streams A-D, learns which events tend to follow one another and at what pace, and produces coherent variations from that learned behavior.
+Constellate is a 15 HP, four-channel relational event memory for VCV Rack 2. It listens to trigger streams A-D, learns which events tend to follow one another and at what pace, and produces coherent variations from that learned behavior.
 
 It is not a fixed step sequencer. The module builds a variable-order transition model from the patch itself, so its output can retain recurring phrases and relationships without simply looping a recording.
 
@@ -34,7 +34,7 @@ It is not a fixed step sequencer. The module builds a variable-order transition 
 - **A-D outputs:** 10 V triggers, color-matched to the nodes on the display.
 - **THREAD:** 0-10 V confidence for the most recent generated choice. Strong, well-learned transitions produce higher voltage; live or uncertain events produce lower voltage.
 
-The display is driven by the real first-order transition matrix. Line brightness shows learned relationship strength, node flashes show emitted events, and the lower amber meter shows THREAD confidence.
+The display is driven by the real first-order transition matrix. Line brightness and route stars show learned relationship strength, node flashes show emitted events, and the lower amber meter shows THREAD confidence.
 
 ## Memory and persistence
 

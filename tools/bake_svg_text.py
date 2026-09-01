@@ -97,7 +97,8 @@ def main() -> None:
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
     args = parser.parse_args()
-    args.destination.write_text(bake(args.source.read_text(encoding="utf-8")), encoding="utf-8")
+    # Write bytes so Windows does not translate the generated LF endings to CRLF.
+    args.destination.write_bytes(bake(args.source.read_text(encoding="utf-8")).encode("utf-8"))
 
 
 if __name__ == "__main__":
