@@ -48,22 +48,22 @@
   <rect x="18.25" y="17.2" width="39.7" height="37.2" rx="1.55" fill="none" stroke="#d19b40" stroke-width="0.32" opacity="0.8"/>
   <rect x="18.55" y="17.5" width="39.1" height="36.6" rx="1.35" fill="url(#display-glow)"/>
 
-  <!-- restrained arcs around the four relationship controls -->
-  <g fill="none" stroke="#e2ad55" stroke-width="0.34" stroke-linecap="round" opacity="0.78">
-    <path d="M6.7 32.3 C4.7 29.2 5 24.1 7.6 21.6 C9.8 19.6 13.2 19.6 15.4 21.6 C18 24.1 18.3 29.2 16.3 32.3"/>
-    <path d="M6.7 52.5 C4.7 49.4 5 44.3 7.6 41.8 C9.8 39.8 13.2 39.8 15.4 41.8 C18 44.3 18.3 49.4 16.3 52.5"/>
-    <path d="M59.9 32.3 C57.9 29.2 58.2 24.1 60.8 21.6 C63 19.6 66.4 19.6 68.6 21.6 C71.2 24.1 71.5 29.2 69.5 32.3"/>
-    <path d="M59.9 52.5 C57.9 49.4 58.2 44.3 60.8 41.8 C63 39.8 66.4 39.8 68.6 41.8 C71.2 44.3 71.5 49.4 69.5 52.5"/>
-    <path d="M33.5 60.9 C30.6 63.2 28.8 68.6 29 75.2" stroke-width="0.44"/>
-    <path d="M42.7 60.9 C45.6 63.2 47.4 68.6 47.2 75.2" stroke-width="0.44"/>
+  <!-- true circular sweeps sit concentrically outside the knob shadows -->
+  <g fill="none" stroke="#e2ad55" stroke-width="0.4" stroke-linecap="round" opacity="0.86">
+    <path d="M6.69 32.51 A6.8 6.8 0 1 1 16.31 32.51"/>
+    <path d="M6.69 52.71 A6.8 6.8 0 1 1 16.31 52.71"/>
+    <path d="M59.89 32.51 A6.8 6.8 0 1 1 69.51 32.51"/>
+    <path d="M59.89 52.71 A6.8 6.8 0 1 1 69.51 52.71"/>
+    <path d="M33.35 61.07 A9.5 9.5 0 0 0 30.32 74.75" stroke-width="0.46"/>
+    <path d="M42.85 61.07 A9.5 9.5 0 0 1 45.88 74.75" stroke-width="0.46"/>
   </g>
   <g fill="#e2ad55">
-    <circle cx="11.5" cy="20.1" r="0.4"/>
-    <circle cx="11.5" cy="40.3" r="0.4"/>
-    <circle cx="64.7" cy="20.1" r="0.4"/>
-    <circle cx="64.7" cy="40.3" r="0.4"/>
-    <circle cx="33.5" cy="60.9" r="0.48"/><circle cx="29" cy="75.2" r="0.48"/>
-    <circle cx="42.7" cy="60.9" r="0.48"/><circle cx="47.2" cy="75.2" r="0.48"/>
+    <circle cx="11.5" cy="20.9" r="0.43"/>
+    <circle cx="11.5" cy="41.1" r="0.43"/>
+    <circle cx="64.7" cy="20.9" r="0.43"/>
+    <circle cx="64.7" cy="41.1" r="0.43"/>
+    <circle cx="33.35" cy="61.07" r="0.48"/><circle cx="30.32" cy="74.75" r="0.48"/>
+    <circle cx="42.85" cy="61.07" r="0.48"/><circle cx="45.88" cy="74.75" r="0.48"/>
   </g>
 
   <text class="label" x="11.5" y="37.2">MEMORY</text>
@@ -88,6 +88,12 @@
   <text class="port-label" x="56.4" y="98">CLOCK</text>
   <text class="port-label" x="68.6" y="98">RESET</text>
 
+  <g fill="#e2ad55" opacity="0.88">
+    <circle cx="7.6" cy="107.15" r="0.42"/><circle cx="19.8" cy="107.15" r="0.42"/>
+    <circle cx="32" cy="107.15" r="0.42"/><circle cx="44.2" cy="107.15" r="0.42"/>
+    <circle cx="56.4" cy="107.15" r="0.42"/><circle cx="68.6" cy="107.15" r="0.42"/>
+  </g>
+
   <path d="M4.5 109.1 H71.7" stroke="#e2ad55" stroke-width="0.3" opacity="0.72"/>
   <circle cx="38.1" cy="109.1" r="0.55" fill="#e2ad55"/>
   <text class="port-label" x="10.5" y="112.7">A</text>
@@ -98,11 +104,16 @@
 
   <!-- colour coding is printed under the corresponding output sockets -->
   <g fill="none" stroke-width="0.65" opacity="0.92">
-    <circle cx="10.5" cy="118" r="5.05" stroke="#25d6f2"/>
-    <circle cx="24.3" cy="118" r="5.05" stroke="#ffb525"/>
-    <circle cx="38.1" cy="118" r="5.05" stroke="#f042a4"/>
-    <circle cx="51.9" cy="118" r="5.05" stroke="#83e342"/>
-    <circle cx="65.7" cy="118" r="5.05" stroke="#a5abb3"/>
+    <circle cx="10.5" cy="118" r="3.45" stroke="#25d6f2"/>
+    <circle cx="24.3" cy="118" r="3.45" stroke="#ffb525"/>
+    <circle cx="38.1" cy="118" r="3.45" stroke="#f042a4"/>
+    <circle cx="51.9" cy="118" r="3.45" stroke="#83e342"/>
+    <circle cx="65.7" cy="118" r="3.45" stroke="#a5abb3"/>
+  </g>
+  <g fill="#e2ad55" opacity="0.88">
+    <circle cx="10.5" cy="123.25" r="0.42"/><circle cx="24.3" cy="123.25" r="0.42"/>
+    <circle cx="38.1" cy="123.25" r="0.42"/><circle cx="51.9" cy="123.25" r="0.42"/>
+    <circle cx="65.7" cy="123.25" r="0.42"/>
   </g>
 
   <text class="brand" x="38.1" y="127.35">halfagiraf</text>

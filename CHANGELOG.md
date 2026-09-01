@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+
+- Rebuilt the knob decorations as true concentric circular sweeps so they remain visible beyond the knob shadows.
+- Reduced the visual size of every input and output jack and tightened the colored output rings to match the concept artwork.
+- Added the concept artwork's small gold registration dots beneath the port rows.
+
 ## 2.1.1
 
 - Improved the legibility and alignment of the lower control and port labels.

@@ -430,6 +430,68 @@ struct ConstellateSquareLight : TBase {
 	void drawHalo(const widget::Widget::DrawArgs& args) override {}
 };
 
+// A compact, high-contrast socket drawn at the concept artwork's scale. The
+// widget keeps a comfortable 6 mm cable target while the metalwork itself is
+// 5.3 mm wide, so patching behavior and cable centering stay unchanged.
+struct ConstellatePort : app::PortWidget {
+	ConstellatePort() {
+		box.size = mm2px(Vec(6.f, 6.f));
+	}
+
+	void draw(const DrawArgs& args) override {
+		const float cx = box.size.x * 0.5f;
+		const float cy = box.size.y * 0.5f;
+		const float radius = mm2px(2.65f);
+
+		nvgSave(args.vg);
+
+		// Soft mounting shadow.
+		nvgBeginPath(args.vg);
+		nvgCircle(args.vg, cx + mm2px(0.12f), cy + mm2px(0.18f), radius);
+		nvgFillColor(args.vg, nvgRGBA(0x00, 0x00, 0x00, 0x96));
+		nvgFill(args.vg);
+
+		// Brushed metal outer ring.
+		NVGpaint metal = nvgLinearGradient(args.vg,
+			cx - radius, cy - radius, cx + radius, cy + radius,
+			nvgRGBA(0xf2, 0xf0, 0xe8, 0xff), nvgRGBA(0x62, 0x66, 0x68, 0xff));
+		nvgBeginPath(args.vg);
+		nvgCircle(args.vg, cx, cy, radius);
+		nvgFillPaint(args.vg, metal);
+		nvgFill(args.vg);
+		nvgStrokeColor(args.vg, nvgRGBA(0x0b, 0x0c, 0x0d, 0xff));
+		nvgStrokeWidth(args.vg, mm2px(0.22f));
+		nvgStroke(args.vg);
+
+		// Dark bevel and recessed cable opening.
+		nvgBeginPath(args.vg);
+		nvgCircle(args.vg, cx, cy, radius * 0.71f);
+		nvgFillColor(args.vg, nvgRGBA(0x34, 0x36, 0x37, 0xff));
+		nvgFill(args.vg);
+		nvgStrokeColor(args.vg, nvgRGBA(0xd7, 0xd5, 0xce, 0xe8));
+		nvgStrokeWidth(args.vg, mm2px(0.18f));
+		nvgStroke(args.vg);
+
+		nvgBeginPath(args.vg);
+		nvgCircle(args.vg, cx, cy, radius * 0.43f);
+		NVGpaint recess = nvgRadialGradient(args.vg, cx, cy,
+			0.f, radius * 0.43f,
+			nvgRGBA(0x00, 0x00, 0x00, 0xff), nvgRGBA(0x10, 0x12, 0x13, 0xff));
+		nvgFillPaint(args.vg, recess);
+		nvgFill(args.vg);
+
+		// A short highlight keeps the socket readable against the black panel.
+		nvgBeginPath(args.vg);
+		nvgArc(args.vg, cx, cy, radius * 0.86f, -2.62f, -0.62f, NVG_CW);
+		nvgStrokeColor(args.vg, nvgRGBA(0xff, 0xff, 0xf8, 0x9a));
+		nvgStrokeWidth(args.vg, mm2px(0.16f));
+		nvgStroke(args.vg);
+
+		nvgRestore(args.vg);
+		app::PortWidget::draw(args);
+	}
+};
+
 struct ConstellateDisplay : TransparentWidget {
 	Constellate* module = nullptr;
 
@@ -633,7 +695,7 @@ struct ConstellateWidget : ModuleWidget {
 
 		addParam(createLightParamCentered<LightButton<ConstellateSquareButton, ConstellateSquareLight<YellowLight>>>(
 			mm2px(Vec(14.5f, 87.3f)), module, Constellate::LEARN_PARAM, Constellate::LEARN_LIGHT));
-		addInput(createInputCentered<PJ301MPort>(
+		addInput(createInputCentered<ConstellatePort>(
 			mm2px(Vec(32.2f, 87.3f)), module, Constellate::MORPH_CV_INPUT));
 		addParam(createParamCentered<Trimpot>(
 			mm2px(Vec(44.f, 87.3f)), module, Constellate::MORPH_CV_ATTENUVERTER_PARAM));
@@ -642,14 +704,14 @@ struct ConstellateWidget : ModuleWidget {
 
 		const float inputX[6] = {7.6f, 19.8f, 32.f, 44.2f, 56.4f, 68.6f};
 		for (int i = 0; i < 4; ++i)
-			addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[i], 102.7f)), module, Constellate::EVENT_INPUTS + i));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[4], 102.7f)), module, Constellate::CLOCK_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(inputX[5], 102.7f)), module, Constellate::RESET_INPUT));
+			addInput(createInputCentered<ConstellatePort>(mm2px(Vec(inputX[i], 102.7f)), module, Constellate::EVENT_INPUTS + i));
+		addInput(createInputCentered<ConstellatePort>(mm2px(Vec(inputX[4], 102.7f)), module, Constellate::CLOCK_INPUT));
+		addInput(createInputCentered<ConstellatePort>(mm2px(Vec(inputX[5], 102.7f)), module, Constellate::RESET_INPUT));
 
 		const float outputX[5] = {10.5f, 24.3f, 38.1f, 51.9f, 65.7f};
 		for (int i = 0; i < 4; ++i)
-			addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[i], 118.f)), module, Constellate::EVENT_OUTPUTS + i));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(outputX[4], 118.f)), module, Constellate::THREAD_OUTPUT));
+			addOutput(createOutputCentered<ConstellatePort>(mm2px(Vec(outputX[i], 118.f)), module, Constellate::EVENT_OUTPUTS + i));
+		addOutput(createOutputCentered<ConstellatePort>(mm2px(Vec(outputX[4], 118.f)), module, Constellate::THREAD_OUTPUT));
 
 	}
 
