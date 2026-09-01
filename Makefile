@@ -18,4 +18,3 @@ include $(RACK_DIR)/plugin.mk
 test:
 	$(CXX) -std=c++11 -O2 -Wall -Wextra -pedantic tests/engine_test.cpp -o tests/engine_test
 	./tests/engine_test
-

@@ -96,4 +96,3 @@ int main() {
 	std::cout << "Constellate engine tests passed\n";
 	return 0;
 }
-

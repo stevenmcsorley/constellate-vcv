@@ -127,4 +127,3 @@ jobs:
             --verify-tag \
             --title "Constellate ${GITHUB_REF_NAME#v}" \
             --generate-notes
-

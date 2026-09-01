@@ -9,4 +9,3 @@
 - Clocked and learned-timing free-run generation.
 - Persistent sparse transition model and timing memory.
 - THREAD confidence CV and live constellation display.
-
